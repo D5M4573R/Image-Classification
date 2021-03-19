@@ -8,7 +8,7 @@ git clone https://github.com/D5M4573R/Image-Classification.git
 
 Open VSCode
 
-Open Folde 
+Open Folder
 
 Browse Image-Classification/Frontend/
 
@@ -18,6 +18,11 @@ Right click on index.html
 
 Open with Live Server 
 
-Browse Image you want to Classifie
+Browse Image you want to Classify
 
 Hit Predict
+
+#Contributer
+Piyush 
+Rahul Dhiman
+Pratham
