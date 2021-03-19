@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <style>
+        body {
+            background-color: wheat;
+            text-align: center;
+            margin-top: 100px;
+            margin-bottom: 100px;
+            padding: 25px;
+        }
+
+        #uploaded-image {
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+            border: 10px solid;
+        }
+
+        #submit {
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="fw-bold" style="padding-bottom: 25px;">CIFAR10 Image Classifier</h1>
+    <h2 id="status" style="padding-bottom: 25px;"></h2>
+    <div id="container">
+        <img src="" height="512" width="auto" id="uploaded-image">
+        <input type="file" name="" id="input-image" required style="padding-top: 25px; padding-bottom: 25px;">
+        <h3 id="prediction" class="fw-bold"></h3>
+        <button id="submit" class="btn btn-primary">Predict</button>
+    </div>
+
+    <script>
+        class L2 {
+
+            static className = 'L2';
+
+            constructor(config) {
+                return tf.regularizers.l1l2(config)
+            }
+        }
+        tf.serialization.registerClass(L2);
+        
+        const status = document.getElementById("status");
+        const container = document.getElementById("container");
+        const inputImage = document.getElementById("input-image");
+        const uploadedImage = document.getElementById("uploaded-image");
+        const prediction = document.getElementById("prediction");
+        const form = document.getElementById("submit");
+
+        form.onclick = () => {
+            form.style.display = "none";
+            predict(tf.browser.fromPixels(uploadedImage));
+        }
+
+        const label = {
+            0: "Aeroplane",
+            1: "Automobile",
+            2: "Bird",
+            3: "Cat",
+            4: "Deer",
+            5: "Dog",
+            6: "Frog",
+            7: "Horse",
+            8: "Ship",
+            9: "Truck"
+        };
+
+        let model;
+
+        inputImage.onchange = () => {
+            let file = inputImage.files[0];
+
+            let reader = new FileReader();
+
+            reader.onloadend = () => {
+                uploadedImage.src = reader.result;
+                uploadedImage.style.display = "block";
+                form.style.display = "block";
+                status.innerText = "";
+                prediction.style.display = "none";
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                uploadedImage.src = "";
+            }
+        }
+
+        console.log("Loading model . . .");
+        status.innerText = "Loading model . . .";
+
+        async function loadModel() {
+            model = await tf.loadLayersModel("model.json");
+            console.log("Model loaded!");
+            status.innerText = "Model loaded!";
+            container.style.display = "block";
+        }
+
+        async function predict(image) {
+            image = tf.image.resizeBilinear(image, [32, 32]);
+            image = tf.div(image, 255.0);
+            let x = await model.predict(tf.reshape(image, [1, 32, 32, 3])).data();
+            console.log(x)
+            prediction.innerText = `Model classifies this image as ${label[x.indexOf(Math.max(...x))]}`;
+            prediction.style.display = "block";
+        }
+
+        loadModel();
+    </script>
+</body>
+
+</html>
