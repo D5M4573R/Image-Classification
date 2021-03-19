@@ -23,6 +23,9 @@ Browse Image you want to Classify
 Hit Predict
 
 #Contributer
+
 Piyush 
+
 Rahul Dhiman
+
 Pratham
