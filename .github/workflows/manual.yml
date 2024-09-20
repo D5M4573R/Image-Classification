@@ -1,0 +1,29 @@
+name: Auto Merge main to master
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  auto_merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout master branch
+        run: git checkout master
+
+      - name: Merge main into master
+        run: |
+          git merge origin/main
+          git push origin master
